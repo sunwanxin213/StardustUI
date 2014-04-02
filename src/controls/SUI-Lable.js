@@ -16,7 +16,6 @@
             get: function () { return text; },
             set: function (value) {
                 text = value;
-                _this._hasUpdateSet = true;
                 _this.onSet();
             }
         });
@@ -31,9 +30,6 @@
         this.textAlign = sui.contentAlignment.topLeft;
         // 设置控件默认内边距
         this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
-
-        // 是否需要更新
-        this._hasUpdateSet = false;
 
         number++;
     }
@@ -55,7 +51,6 @@
             maxWidth += this.padding.left + this.padding.right;
             this.bufferCanvas.width = this.size.width = maxWidth;
             this.bufferCanvas.height = this.size.height = maxHeight * strList.length + (this.padding.top + this.padding.bottom);
-            this._hasUpdateSet = false;
         }
     };
 

@@ -80,4 +80,14 @@
         // 右下角
         bottomRight: 128
     };
+
+    // 指定TextBox控件中字符的大小写
+    sui.characterCasing = {
+        // 将所有字符都转换为小写
+        lower: 0,
+        // 字符大小写保持不变
+        normal: 1,
+        // 将所有字符都转换为大写
+        upper: 2
+    };
 }(StardustUI.prototype);

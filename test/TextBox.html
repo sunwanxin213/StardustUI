@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../src/core/SUI.js"></script>
+    <script src="../src/core/SUI-Enum.js"></script>
+    <script src="../src/core/SUI-Util.js"></script>
+    <script src="../src/controls/SUI-TextBox.js"></script>
+    <script>
+        window.onload = function () {
+            var canvas = document.getElementById("demoCanvas");
+            var ctx = canvas.getContext("2d");
+            var sui = new StardustUI(ctx);
+
+            // 创建一个Lable控件
+            var textBox1 = new sui.TextBox();
+
+            textBox1.font = "24px 宋体";
+            textBox1.text = "哈哈哈哈哈";
+
+            textBox1.location = { x: 20, y: 20 };
+
+            // 添加控件到环境
+            sui.addControl(textBox1);
+
+            // 绘制整个环境
+            sui.draw();
+        };
+    </script>
+</head>
+<body>
+    <canvas id="demoCanvas" width="640" height="480" style="border: 1px solid #000;"></canvas>
+</body>
+</html>
