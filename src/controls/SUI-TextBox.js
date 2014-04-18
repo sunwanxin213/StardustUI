@@ -53,6 +53,17 @@
         // 设置控件默认背景颜色
         this.backColor = "#fff";
 
+        this.addEventListener("mousemove", function (e) {
+            if (e.layerX < _this.location.x ||
+                e.layerX > _this.location.x + _this.size.width ||
+                e.layerY < _this.location.y ||
+                e.layerY > _this.location.y + _this.size.height) {
+                e.target.style.cursor = "default";
+            } else {
+                e.target.style.cursor = "text";
+            }
+        });
+
         number++;
     }
 
@@ -78,6 +89,7 @@
             ctx.fillText(strList[i], 0, fontHeight * i);
         }
         ctx.translate(-this.padding.left, -((this.size.height - fontHeight) / 2));
+        ctx.clearRect(this.size.width - this.padding.right, 0, this.padding.right, this.size.height);
 
         ctx.strokeStyle = "#888";
         switch (this.borderStyle) {

@@ -16,6 +16,13 @@
         // 控件列表
         this.controlList = [];
 
+        this.addEventListener = function (name, callback) {
+            ctx.canvas.addEventListener(name, callback, false);
+        };
+        this.removeEventListener = function (name, callback) {
+            ctx.canvas.removeEventListener(name, callback, false);
+        };
+
         this.addControl = function (control) {
             /// <summary>添加控件</summary>
             /// <param name="control" type="SUI.prototype.Control">控件对象</param>
@@ -145,7 +152,7 @@
             /// <param name="listener" type="EventListener">事件监听函数</param>
 
             listener.eventRandomTag = "SUIEventListener" + new Date().getTime();
-            listenerList.push({ name: type.toLowerCase(), callback: listener });
+            this.listenerList.push({ name: type.toLowerCase(), callback: listener });
         };
 
         this.removeEventListener = function (type, listener) {
@@ -153,7 +160,7 @@
             /// <param name="type" type="String">事件类型</param>
             /// <param name="listener" type="EventListener">事件监听函数</param>
 
-            for (var i = listenerList.length; i--;) if (listenerList[i].eventRandomTag == listener.eventRandomTag) return ((listenerList = listenerList.slice(0, i).concat(listenerList.slice(i + 1, listenerList.length))) && true);
+            for (var i = this.listenerList.length; i--;) if (this.listenerList[i].eventRandomTag == listener.eventRandomTag) return ((this.listenerList = this.listenerList.slice(0, i).concat(this.listenerList.slice(i + 1, this.listenerList.length))) && true);
         };
     };
 
@@ -168,6 +175,9 @@
         }
         controlNames.push(control.name);
         target.controlList.push(control);
+        for (var i = 0; i < control.listenerList.length; i++) {
+            target.addEventListener(control.listenerList[i].name, control.listenerList[i].callback);
+        }
     }
 
     function removeControl(target, control) {
@@ -181,6 +191,9 @@
                 (controlNames = controlNames.slice(0, i).concat(controlNames.slice(i + 1, controlNames.length)));
                 for (var n = target.controlList.length; n--;) {
                     if (target.controlList[n].name == control.name) {
+                        for (var i = 0; i < control.listenerList.length; i++) {
+                            target.removeEventListener(control.listenerList[i].name, control.listenerList[i].callback);
+                        }
                         return ((target.controlList = target.controlList.slice(0, n).concat(target.controlList.slice(n + 1, target.controlList.length))) && true);
                     }
                 }
