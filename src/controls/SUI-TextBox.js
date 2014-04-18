@@ -53,14 +53,44 @@
         // 设置控件默认背景颜色
         this.backColor = "#fff";
 
+        // 设置鼠标移入样式
         this.addEventListener("mousemove", function (e) {
-            if (e.layerX < _this.location.x ||
-                e.layerX > _this.location.x + _this.size.width ||
-                e.layerY < _this.location.y ||
-                e.layerY > _this.location.y + _this.size.height) {
+            if (sui.util.boundsRect(_this.location.x, _this.location.y, _this.location.x + _this.size.width, _this.size.height, e.layerX, e.layerY, 1, 1)) {
                 e.target.style.cursor = "default";
             } else {
-                e.target.style.cursor = "text";
+                for (var i in sui.cursors) {
+                    if (sui.cursors[i] == _this.cursor) {
+                        e.target.style.cursor = i;
+                        return;
+                    }
+                }
+            }
+        });
+
+        // 设置点击后进入编辑模式
+        this.addEventListener("click", function (e) {
+            if (document.getElementById("SUI-TextBox-Span")) {
+                return;
+            } else {
+                var span = document.createElement("span");
+                span.style.cssText = "position:absolute;display:block;border:1px solid #000;" +
+                                     "left:" + (e.pageX - e.layerX + _this.location.x) + "px;" +
+                                     "top:" + (e.pageY - e.layerY + _this.location.y) + "px;" +
+                                     "width:" + (_this.size.width) + "px;" +
+                                     "height:" + (_this.size.height) + "px;" +
+                                     "line-height:" + (_this.size.height) + "px;";
+                span.textContent = _this.text;
+                span.addEventListener("keydown", function (ke) {
+                    if (ke.keyCode == 13) {
+                        if (window.event) {
+                            ke.cancelBubble = true;
+                        } else {
+                            ke.stopPropagation();
+                        }
+                    }
+                }, false);
+                document.body.appendChild(span);
+                span.focus();
             }
         });
 

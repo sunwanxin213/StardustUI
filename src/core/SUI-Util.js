@@ -42,5 +42,23 @@
         }
     };
 
+    util.boundsRect = function (x1, y1, w1, h1, x2, y2, w2, h2) {
+        /// <summary>矩形检测</summary>
+        /// <param name="x1" type="Number">矩形1X位置</param>
+        /// <param name="y1" type="Number">矩形1Y位置</param>
+        /// <param name="w1" type="Number">矩形1宽度</param>
+        /// <param name="h1" type="Number">矩形1高度</param>
+        /// <param name="x2" type="Number">矩形2X位置</param>
+        /// <param name="y2" type="Number">矩形2Y位置</param>
+        /// <param name="w2" type="Number">矩形2宽度</param>
+        /// <param name="h2" type="Number">矩形2高度</param>
+        /// <returns type="Boolean">是否碰撞</returns>
+
+        return (x1 + w1 < x2 ||
+                x2 + w2 < x1 ||
+                y1 + h1 < y2 ||
+                y2 + h2 < y1);
+    };
+
     sui.util = util;
 }(StardustUI.prototype);
