@@ -9,16 +9,8 @@
 
         // 设置代码中用来标识该对象的名称
         this.name = "lable" + number;
-
-        var text = "lable" + number
-        // 设置默认文本
-        Object.defineProperty(this, "text", {
-            get: function () { return text; },
-            set: function (value) {
-                text = value;
-                _this.onSet();
-            }
-        });
+        var text = "lable" + number;
+        number++;
 
         // 设置为自动调整大小
         this.autoSize = true;
@@ -31,7 +23,14 @@
         // 设置控件默认内边距
         this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
 
-        number++;
+        // 设置默认文本
+        Object.defineProperty(this, "text", {
+            get: function () { return text; },
+            set: function (value) {
+                text = value;
+                _this.onSet();
+            }
+        });
     }
 
     Lable.prototype = new SUI.prototype.Control();

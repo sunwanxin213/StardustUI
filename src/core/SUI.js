@@ -10,17 +10,19 @@
         // 禁止拖拽
         ctx.canvas.setAttribute("draggable", "false");
 
+        var _this = this;
+
         // 缓存上下文对象
         this.context = ctx;
 
         // 控件列表
         this.controlList = [];
 
-        this.addEventListener = function (name, callback) {
-            ctx.canvas.addEventListener(name, callback, false);
+        this.addEventListener = function (name, callback, o) {
+            ctx.canvas.addEventListener(name, callback, o);
         };
-        this.removeEventListener = function (name, callback) {
-            ctx.canvas.removeEventListener(name, callback, false);
+        this.removeEventListener = function (name, callback, o) {
+            ctx.canvas.removeEventListener(name, callback, o);
         };
 
         this.addControl = function (control) {
@@ -36,6 +38,24 @@
 
             removeControl(this, control);
         };
+
+        // 监测光标样式变更
+        this.addEventListener("mousemove", function (e) {
+            var c = null;
+            for (var i in _this.controlList) {
+                c = _this.controlList[i];
+                if (!sui.util.bounds(e, c)) {
+                    e.target.style.cursor = "default";
+                } else {
+                    for (var i in sui.cursors) {
+                        if (sui.cursors[i] == c.cursor) {
+                            e.target.style.cursor = i;
+                            return;
+                        }
+                    }
+                }
+            }
+        }, false);
 
         this.draw = function () {
             var list = this.controlList,
@@ -121,6 +141,30 @@
         // Z排序
         this.zIndex = 0;
 
+        // 控件X坐标属性
+        Object.defineProperty(this, "x", {
+            get: function () { return _this.location.x; },
+            set: function (value) { _this.location.x = value; }
+        });
+
+        // 控件Y坐标属性
+        Object.defineProperty(this, "y", {
+            get: function () { return _this.location.y; },
+            set: function (value) { _this.location.y = value; }
+        });
+
+        // 控件宽度属性
+        Object.defineProperty(this, "width", {
+            get: function () { return _this.size.width; },
+            set: function (value) { _this.size.width = value; }
+        });
+
+        // 控件高度属性
+        Object.defineProperty(this, "height", {
+            get: function () { return _this.size.height; },
+            set: function (value) { _this.size.height = value; }
+        });
+
         // 指示控件是否可以接受用户拖到它上面的数据
         Object.defineProperty(this, "allowDrow", {
             get: function () { return allowDrow; },
@@ -146,16 +190,16 @@
 
         // 事件监听列表
         this.listenerList = [];
-        this.addEventListener = function (type, listener) {
+        this.addEventListener = function (type, listener, o) {
             /// <summary>添加事件监听函数</summary>
             /// <param name="type" type="String">事件类型</param>
             /// <param name="listener" type="EventListener">事件监听函数</param>
 
             listener.eventRandomTag = "SUIEventListener" + new Date().getTime();
-            this.listenerList.push({ name: type.toLowerCase(), callback: listener });
+            this.listenerList.push({ name: type.toLowerCase(), callback: listener, o: o });
         };
 
-        this.removeEventListener = function (type, listener) {
+        this.removeEventListener = function (type, listener, o) {
             /// <summary>移除事件监听函数</summary>
             /// <param name="type" type="String">事件类型</param>
             /// <param name="listener" type="EventListener">事件监听函数</param>
@@ -176,7 +220,7 @@
         controlNames.push(control.name);
         target.controlList.push(control);
         for (var i = 0; i < control.listenerList.length; i++) {
-            target.addEventListener(control.listenerList[i].name, control.listenerList[i].callback);
+            target.addEventListener(control.listenerList[i].name, control.listenerList[i].callback, control.listenerList[i].o);
         }
     }
 

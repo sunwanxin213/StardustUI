@@ -9,28 +9,8 @@
 
         // 设置代码中用来标识该对象的名称
         this.name = "textBox" + number;
-        this.text = "textBox" + number
-
-        // 移除属性
-        delete this.autoSize;
-        delete this.borderStyle;
-
-        // 设置控件默认边框
-        var borderStyle = sui.borderStyle.fixed3D;
-        Object.defineProperty(this, "borderStyle", {
-            get: function () { return borderStyle; },
-            set: function (value) {
-                borderStyle = value;
-                switch (value) {
-                    case sui.borderStyle.fixedSingle:
-                        _this.padding = { left: 1, right: 1, top: 1, bottom: 1 };
-                        break;
-                    case sui.borderStyle.fixed3D:
-                        _this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
-                        break;
-                }
-            }
-        })
+        this.text = "textBox" + number;
+        number++;
 
         // 设置控件默认内边距
         this.padding = { left: 5, right: 5, top: 5, bottom: 5 };
@@ -44,57 +24,98 @@
         this.characterCasing = sui.characterCasing.normal;
         // 指定可以在编辑控件中输入的最大字符数
         this.maxLength = 32767;
-        // 指示将为单行编辑控件的密码输入显示的字符
-        this.passwordChar = null;
         // 控制能否更改编辑控件中的文本
         this.readOnly = false;
         // 设置控件默认光标为文本
         this.cursor = sui.cursors.text;
         // 设置控件默认背景颜色
         this.backColor = "#fff";
+        // 指示将为单行编辑控件的密码输入显示的字符
+        var passwordChar = null;
+        // 设置控件默认边框
+        var borderStyle = sui.borderStyle.fixed3D;
 
-        // 设置鼠标移入样式
-        this.addEventListener("mousemove", function (e) {
-            if (sui.util.boundsRect(_this.location.x, _this.location.y, _this.location.x + _this.size.width, _this.size.height, e.layerX, e.layerY, 1, 1)) {
-                e.target.style.cursor = "default";
-            } else {
-                for (var i in sui.cursors) {
-                    if (sui.cursors[i] == _this.cursor) {
-                        e.target.style.cursor = i;
-                        return;
-                    }
+        // 密码字符属性
+        Object.defineProperty(this, "passwordChar", {
+            get: function () { return passwordChar; },
+            set: function (value) {
+                value && (passwordChar = value[0]);
+            }
+        });
+
+        // 控件默认边框属性
+        Object.defineProperty(this, "borderStyle", {
+            get: function () { return borderStyle; },
+            set: function (value) {
+                borderStyle = value;
+                switch (value) {
+                    case sui.borderStyle.fixedSingle:
+                        _this.padding = { left: 1, right: 1, top: 1, bottom: 1 };
+                        break;
+                    case sui.borderStyle.fixed3D:
+                        _this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
+                        break;
                 }
             }
         });
 
+        // 移除属性
+        delete this.autoSize;
+
+        // 文本被改变事件
+        this.onTextChanged;
+
+        var textBoxInput;
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
-            if (document.getElementById("SUI-TextBox-Span")) {
+            if (!sui.util.bounds(e, _this)) {
                 return;
-            } else {
-                var span = document.createElement("span");
-                span.style.cssText = "position:absolute;display:block;border:1px solid #000;" +
-                                     "left:" + (e.pageX - e.layerX + _this.location.x) + "px;" +
-                                     "top:" + (e.pageY - e.layerY + _this.location.y) + "px;" +
-                                     "width:" + (_this.size.width) + "px;" +
-                                     "height:" + (_this.size.height) + "px;" +
-                                     "line-height:" + (_this.size.height) + "px;";
-                span.textContent = _this.text;
-                span.addEventListener("keydown", function (ke) {
-                    if (ke.keyCode == 13) {
-                        if (window.event) {
-                            ke.cancelBubble = true;
-                        } else {
-                            ke.stopPropagation();
-                        }
-                    }
-                }, false);
-                document.body.appendChild(span);
-                span.focus();
             }
+            if (window.event) {
+                e.cancelBubble = true;
+            } else {
+                e.stopPropagation();
+            }
+            var input = document.createElement("input");
+            input.type = "text";
+            input.id = "SUI-TextBox-Input" + +(new Date());
+            input.value = _this.text;
+            input.maxLength = _this.maxLength;
+            input.readOnly = _this.readOnly;
+            input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid #000;" +
+                                 "left:" + (e.pageX - (e.offsetX || e.layerX) + _this.location.x) + "px;" +
+                                 "top:" + (e.pageY - (e.offsetY || e.layerY) + _this.location.y) + "px;" +
+                                 "width:" + (_this.width) + "px;" +
+                                 "height:" + (_this.height) + "px;" +
+                                 "line-height:" + (_this.height) + "px;" +
+                                 "font:" + _this.font;
+            input.addEventListener("keydown", function (ke) {
+                if (ke.keyCode == 13) {
+                    if (window.event) ke.cancelBubble = true;
+                    else ke.stopPropagation();
+                    document.body.click();
+                }
+            }, false);
+            document.body.appendChild(input);
+            input.focus();
+            textBoxInput = input;
         });
 
-        number++;
+        // 当点击到其他区域时取消编辑状态
+        window.addEventListener("click", function (e) {
+            if (textBoxInput && e.target != textBoxInput) {
+                var oldText = _this.text;
+                _this.text = textBoxInput.value;
+                document.body.removeChild(textBoxInput);
+                textBoxInput = null;
+                if (_this.onTextChanged && oldText != _this.text) {
+                    _this.onTextChanged({
+                        oldValue: oldText,
+                        newValue: _this.text
+                    });
+                }
+            }
+        }, true);
     }
 
     TextBox.prototype = new SUI.prototype.Control();
@@ -103,7 +124,7 @@
     var textBox = TextBox.prototype;
 
     textBox.onSet = function () {
-        this.bufferCanvas.height = this.size.height = sui.util.getTextHeight(this.text, this.font) + (this.padding.top + this.padding.bottom);
+        this.bufferCanvas.height = this.height = sui.util.getTextHeight(this.text || "你", this.font) + (this.padding.top + this.padding.bottom);
     };
 
     textBox.onPaint = function (canvas, ctx) {
@@ -114,26 +135,27 @@
         ctx.textBaseline = "top";
         var strList = this.text.split("\r\n");
         var fontHeight = sui.util.getTextHeight(strList[0], this.font);
-        ctx.translate(this.padding.left, (this.size.height - fontHeight) / 2);
+        ctx.translate(this.padding.left, (this.height - fontHeight) / 2);
         for (var i = 0; i < strList.length; i++) {
+            if (this.passwordChar) strList[i] = strList[i].replace(/(.)/g, this.passwordChar);
             ctx.fillText(strList[i], 0, fontHeight * i);
         }
-        ctx.translate(-this.padding.left, -((this.size.height - fontHeight) / 2));
-        ctx.clearRect(this.size.width - this.padding.right, 0, this.padding.right, this.size.height);
+        ctx.translate(-this.padding.left, -((this.height - fontHeight) / 2));
+        ctx.clearRect(this.width - this.padding.right, 0, this.padding.right, this.height);
 
         ctx.strokeStyle = "#888";
         switch (this.borderStyle) {
             case sui.borderStyle.fixedSingle:
-                ctx.strokeRect(1, 1, this.size.width - 2, this.size.height - 2);
+                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
                 break;
             case sui.borderStyle.fixed3D:
                 ctx.shadowColor = "rgba(50, 50, 50, 0.6)";
                 ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
                 ctx.shadowBlur = 5;
                 ctx.strokeStyle = "rgba(0,0,0,0)";
-                ctx.strokeRect(1, 1, this.size.width - 2, this.size.height - 2);
+                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
                 ctx.strokeStyle = "#888";
-                ctx.strokeRect(1, 1, this.size.width - 2, this.size.height - 2);
+                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
                 break;
         }
     };

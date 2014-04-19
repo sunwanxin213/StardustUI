@@ -6,6 +6,7 @@
     <script src="../src/core/SUI.js"></script>
     <script src="../src/core/SUI-Enum.js"></script>
     <script src="../src/core/SUI-Util.js"></script>
+    <script src="../src/controls/SUI-Lable.js"></script>
     <script src="../src/controls/SUI-TextBox.js"></script>
     <script>
         window.onload = function () {
@@ -13,23 +14,55 @@
             var ctx = canvas.getContext("2d");
             var sui = new StardustUI(ctx);
 
+            var font = "24px 宋体"
+
             // 创建一个Lable控件
+            var lable1 = new sui.Lable();
+            lable1.text = "请输入账号:";
+            lable1.font = font;
+            lable1.location = { x: 50, y: 200 };
+            lable1.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个Lable控件
+            var lable2 = new sui.Lable();
+            lable2.text = "请输入密码:";
+            lable2.font = font;
+            lable2.location = { x: 50, y: 300 };
+            lable2.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个TextBox控件
             var textBox1 = new sui.TextBox();
-
             textBox1.font = "24px 宋体";
-            textBox1.text = "哈哈哈哈哈";
+            textBox1.text = "";
+            textBox1.width = 300;
+            textBox1.location = { x: 200, y: 200 };
 
-            textBox1.location = { x: 20, y: 20 };
+            // 创建一个TextBox控件
+            var textBox2 = new sui.TextBox();
+            textBox2.font = "24px 宋体";
+            textBox2.text = "";
+            textBox2.width = 300;
+            textBox2.passwordChar = "*";
+            textBox2.location = { x: 200, y: 300 };
+            textBox2.onTextChanged = function (e) {
+                alert("哈，你的密码被我发现了！" + e.newValue);
+            };
 
             // 添加控件到环境
+            sui.addControl(lable1);
+            sui.addControl(lable2);
             sui.addControl(textBox1);
+            sui.addControl(textBox2);
 
-            // 绘制整个环境
-            sui.draw();
+            setInterval(function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                // 绘制整个环境
+                sui.draw();
+            }, 1000 / 60);
         };
     </script>
 </head>
 <body>
-    <canvas id="demoCanvas" width="640" height="480" style="border: 1px solid #000;"></canvas>
+    <canvas id="demoCanvas" width="640" height="480" style="border: 1px solid #000; position: absolute; left: 200px;"></canvas>
 </body>
 </html>
