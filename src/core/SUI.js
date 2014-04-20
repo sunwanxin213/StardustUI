@@ -44,7 +44,7 @@
             var c = null;
             for (var i in _this.controlList) {
                 c = _this.controlList[i];
-                if (!sui.util.bounds(e, c)) {
+                if (!sui.util.bounds(e, c) || !c.isVisible) {
                     e.target.style.cursor = "default";
                 } else {
                     for (var i in sui.cursors) {
@@ -69,6 +69,8 @@
                 c = list[i],
                 canvas = c.bufferCanvas,
                 ctx = c.bufferCtx;
+
+                if (!c.isVisible) continue;
 
                 c.onSet && c.onSet();
 
@@ -140,6 +142,8 @@
         this.size = { width: 150, height: 150 };
         // Z排序
         this.zIndex = 0;
+        // 控件是否可见
+        this.isVisible = true;
 
         // 控件X坐标属性
         Object.defineProperty(this, "x", {

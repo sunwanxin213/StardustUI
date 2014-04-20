@@ -9,7 +9,7 @@
 
         // 设置代码中用来标识该对象的名称
         this.name = "textBox" + number;
-        this.text = "textBox" + number;
+        var text = "textBox" + number;
         number++;
 
         // 设置控件默认内边距
@@ -34,6 +34,23 @@
         var passwordChar = null;
         // 设置控件默认边框
         var borderStyle = sui.borderStyle.fixed3D;
+
+        // 文本被改变事件
+        this.onTextChanged;
+
+        // 文本内容属性
+        Object.defineProperty(this, "text", {
+            get: function () { return text; },
+            set: function (value) {
+                if (_this.onTextChanged && text != value) {
+                    _this.onTextChanged({
+                        oldValue: text,
+                        newValue: value
+                    });
+                }
+                text = value;
+            }
+        });
 
         // 密码字符属性
         Object.defineProperty(this, "passwordChar", {
@@ -62,12 +79,9 @@
         // 移除属性
         delete this.autoSize;
 
-        // 文本被改变事件
-        this.onTextChanged;
-
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
-            if (!sui.util.bounds(e, _this)) {
+            if (!sui.util.bounds(e, _this) || !_this.isVisible) {
                 return;
             }
             if (window.event) {
@@ -80,7 +94,7 @@
             input.id = "SUI-TextBox-Input" + +(new Date());
             input.value = _this.text;
             input.maxLength = _this.maxLength;
-            input.readOnly = _this.readOnly;
+            input.readOnly = !_this.isEnable || _this.readOnly;
             input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid #000;" +
                                  "left:" + (e.pageX - (e.offsetX || e.layerX) + _this.location.x) + "px;" +
                                  "top:" + (e.pageY - (e.offsetY || e.layerY) + _this.location.y) + "px;" +
@@ -97,16 +111,8 @@
             }, false);
             // 当点击到其他区域时取消编辑状态
             input.addEventListener("blur", function () {
-                var oldText = _this.text;
                 _this.text = input.value;
                 document.body.removeChild(input);
-                textBoxInput = null;
-                if (_this.onTextChanged && oldText != _this.text) {
-                    _this.onTextChanged({
-                        oldValue: oldText,
-                        newValue: _this.text
-                    });
-                }
             });
             document.body.appendChild(input);
             input.focus();
