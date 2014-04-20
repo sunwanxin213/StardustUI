@@ -15,9 +15,9 @@
         // 设置控件默认内边距
         this.padding = { left: 5, right: 5, top: 5, bottom: 5 };
         // 设置控件默认宽度
-        this.size.width = 100;
+        this.width = 100;
         // 设置控件默认高度
-        this.size.height = 21;
+        this.height = 21;
         // 设置控件内容文本对齐方式
         this.textAlign = sui.contentAlignment.left;
         // 指示所有字符应保持不变还是应该转换为大写或小写
@@ -65,7 +65,6 @@
         // 文本被改变事件
         this.onTextChanged;
 
-        var textBoxInput;
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
             if (!sui.util.bounds(e, _this)) {
@@ -77,7 +76,7 @@
                 e.stopPropagation();
             }
             var input = document.createElement("input");
-            input.type = "text";
+            input.type = _this.passwordChar ? "password" : "text";
             input.id = "SUI-TextBox-Input" + +(new Date());
             input.value = _this.text;
             input.maxLength = _this.maxLength;
@@ -93,20 +92,14 @@
                 if (ke.keyCode == 13) {
                     if (window.event) ke.cancelBubble = true;
                     else ke.stopPropagation();
-                    document.body.click();
+                    document.body.focus();
                 }
             }, false);
-            document.body.appendChild(input);
-            input.focus();
-            textBoxInput = input;
-        });
-
-        // 当点击到其他区域时取消编辑状态
-        window.addEventListener("click", function (e) {
-            if (textBoxInput && e.target != textBoxInput) {
+            // 当点击到其他区域时取消编辑状态
+            input.addEventListener("blur", function () {
                 var oldText = _this.text;
-                _this.text = textBoxInput.value;
-                document.body.removeChild(textBoxInput);
+                _this.text = input.value;
+                document.body.removeChild(input);
                 textBoxInput = null;
                 if (_this.onTextChanged && oldText != _this.text) {
                     _this.onTextChanged({
@@ -114,8 +107,29 @@
                         newValue: _this.text
                     });
                 }
-            }
-        }, true);
+            });
+            document.body.appendChild(input);
+            input.focus();
+            setCaretPosition(input, input.value.length);
+        });
+    }
+
+    function setCaretPosition(ctrl, pos) {
+        /// <summary>设置光标</summary>
+        /// <param name="ctrl" type="HTMLInputElement">输入框控件</param>
+        /// <param name="pos" type="Number">位置</param>
+
+        if (ctrl.setSelectionRange) {
+            ctrl.focus();
+            ctrl.setSelectionRange(pos, pos);
+        }
+        else if (ctrl.createTextRange) {
+            var range = ctrl.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
     }
 
     TextBox.prototype = new SUI.prototype.Control();

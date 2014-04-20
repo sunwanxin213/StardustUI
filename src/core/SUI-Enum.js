@@ -1,6 +1,8 @@
-﻿void function (sui) {
+﻿void function (sui, suip) {
+    var obj = {};
+
     // 制定控件上图像的位置
-    sui.imageLayout = {
+    obj.imageLayout = {
         // 图像沿控件的矩形工作区顶部左对齐
         none: 0,
         // 图像沿控件的矩形工作区平铺
@@ -14,7 +16,7 @@
     };
 
     // 边框样式
-    sui.borderStyle = {
+    obj.borderStyle = {
         // 无边框
         none: 0,
         // 单行边框,
@@ -24,7 +26,7 @@
     };
 
     // 光标
-    sui.cursors = {
+    obj.cursors = {
         // 默认光标(通常是一个箭头)
         default: 0,
         // 默认，浏览器设置的光标
@@ -60,7 +62,7 @@
     };
 
     // 制定绘图表面上内容的对齐方式
-    sui.contentAlignment = {
+    obj.contentAlignment = {
         // 左上角
         topLeft: 0,
         // 靠上居中
@@ -82,7 +84,7 @@
     };
 
     // 指定TextBox控件中字符的大小写
-    sui.characterCasing = {
+    obj.characterCasing = {
         // 将所有字符都转换为小写
         lower: 0,
         // 字符大小写保持不变
@@ -90,4 +92,11 @@
         // 将所有字符都转换为大写
         upper: 2
     };
-}(StardustUI.prototype);
+
+    for (var i in obj) {
+        if (!obj.isPrototypeOf(i)) {
+            sui[i] = obj[i];
+            suip[i] = obj[i];
+        }
+    }
+}(StardustUI, StardustUI.prototype);
