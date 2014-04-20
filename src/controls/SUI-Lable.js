@@ -39,6 +39,8 @@
     var lable = Lable.prototype;
 
     lable.onSet = function () {
+        /// <summary>设置控件</summary>
+
         if (this.autoSize) {
             var maxWidth = 0,
                 maxHeight = 0;

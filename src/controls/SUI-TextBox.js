@@ -42,6 +42,14 @@
         Object.defineProperty(this, "text", {
             get: function () { return text; },
             set: function (value) {
+                switch (_this.characterCasing) {
+                    case sui.characterCasing.lower:
+                        value = value.toLowerCase();
+                        break;
+                    case sui.characterCasing.upper:
+                        value = value.toUpperCase();
+                        break;
+                }
                 if (_this.onTextChanged && text != value) {
                     _this.onTextChanged({
                         oldValue: text,
@@ -81,27 +89,23 @@
 
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
-            if (!sui.util.bounds(e, _this) || !_this.isVisible) {
-                return;
-            }
-            if (window.event) {
-                e.cancelBubble = true;
-            } else {
-                e.stopPropagation();
-            }
+            if (!sui.util.bounds(e, _this) || !_this.isVisible) return;
+            if (window.event) e.cancelBubble = true;
+            else e.stopPropagation();
+
             var input = document.createElement("input");
             input.type = _this.passwordChar ? "password" : "text";
             input.id = "SUI-TextBox-Input" + +(new Date());
             input.value = _this.text;
             input.maxLength = _this.maxLength;
             input.readOnly = !_this.isEnable || _this.readOnly;
-            input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid #000;" +
+            input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid #000;outline:none;" +
                                  "left:" + (e.pageX - (e.offsetX || e.layerX) + _this.location.x) + "px;" +
                                  "top:" + (e.pageY - (e.offsetY || e.layerY) + _this.location.y) + "px;" +
                                  "width:" + (_this.width) + "px;" +
                                  "height:" + (_this.height) + "px;" +
                                  "line-height:" + (_this.height) + "px;" +
-                                 "font:" + _this.font;
+                                 "font:" + _this.font + ";";
             input.addEventListener("keydown", function (ke) {
                 if (ke.keyCode == 13) {
                     if (window.event) ke.cancelBubble = true;
@@ -116,26 +120,8 @@
             });
             document.body.appendChild(input);
             input.focus();
-            setCaretPosition(input, input.value.length);
+            sui.util.setCaretPosition(input, input.value.length);
         });
-    }
-
-    function setCaretPosition(ctrl, pos) {
-        /// <summary>设置光标</summary>
-        /// <param name="ctrl" type="HTMLInputElement">输入框控件</param>
-        /// <param name="pos" type="Number">位置</param>
-
-        if (ctrl.setSelectionRange) {
-            ctrl.focus();
-            ctrl.setSelectionRange(pos, pos);
-        }
-        else if (ctrl.createTextRange) {
-            var range = ctrl.createTextRange();
-            range.collapse(true);
-            range.moveEnd('character', pos);
-            range.moveStart('character', pos);
-            range.select();
-        }
     }
 
     TextBox.prototype = new SUI.prototype.Control();
@@ -144,6 +130,8 @@
     var textBox = TextBox.prototype;
 
     textBox.onSet = function () {
+        /// <summary>设置控件</summary>
+
         this.bufferCanvas.height = this.height = sui.util.getTextHeight(this.text || "你", this.font) + (this.padding.top + this.padding.bottom);
     };
 

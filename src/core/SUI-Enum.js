@@ -93,6 +93,16 @@
         upper: 2
     };
 
+    // 指定控件的外观
+    obj.flatStyle = {
+        // 该控件以平面显示
+        flat: 0,
+        // 该控件以平面显示，知道鼠标指针移动到该控件为止，此时该控件外观为三维
+        popup: 1,
+        // 该控件外观为三维
+        standard: 2
+    };
+
     for (var i in obj) {
         if (!obj.isPrototypeOf(i)) {
             sui[i] = obj[i];

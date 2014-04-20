@@ -42,6 +42,24 @@
         }
     };
 
+    util.setCaretPosition = function (ctrl, pos) {
+        /// <summary>设置光标</summary>
+        /// <param name="ctrl" type="HTMLInputElement">输入框控件</param>
+        /// <param name="pos" type="Number">位置</param>
+
+        if (ctrl.setSelectionRange) {
+            ctrl.focus();
+            ctrl.setSelectionRange(pos, pos);
+        }
+        else if (ctrl.createTextRange) {
+            var range = ctrl.createTextRange();
+            range.collapse(true);
+            range.moveEnd('character', pos);
+            range.moveStart('character', pos);
+            range.select();
+        }
+    };
+
     util.bounds = function (e, c) {
         /// <summary>碰撞检测</summary>
         /// <param name="e" type="Number">事件参数对象</param>
