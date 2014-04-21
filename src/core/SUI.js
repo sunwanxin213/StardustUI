@@ -77,11 +77,9 @@
                 canvas.width = c.size.width,
                 canvas.height = c.size.height;
 
-                ctx.save();
                 c.onPaintBackground(ctx);
                 c.onPaint(canvas, ctx)
                 this.context.drawImage(canvas, c.location.x, c.location.y);
-                ctx.restore();
             }
         };
     }

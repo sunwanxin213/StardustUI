@@ -84,9 +84,6 @@
             }
         });
 
-        // 移除属性
-        delete this.autoSize;
-
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
             if (!sui.util.bounds(e, _this) || !_this.isVisible) return;
@@ -110,7 +107,7 @@
                 if (ke.keyCode == 13) {
                     if (window.event) ke.cancelBubble = true;
                     else ke.stopPropagation();
-                    document.body.focus();
+                    input.blur();
                 }
             }, false);
             // 当点击到其他区域时取消编辑状态
@@ -135,37 +132,35 @@
         this.bufferCanvas.height = this.height = sui.util.getTextHeight(this.text || "你", this.font) + (this.padding.top + this.padding.bottom);
     };
 
+    var textCanvas;
+    var textCtx;
+    window.addEventListener("load", function () {
+        textCanvas = document.createElement("canvas");
+        textCtx = textCanvas.getContext("2d");
+    }, false);
     textBox.onPaint = function (canvas, ctx) {
         /// <summary>绘制控件</summary>
 
-        ctx.fillStyle = this.foreColor;
-        ctx.font = this.font;
-        ctx.textBaseline = "top";
+        ctx.save();
+
+        textCanvas.width = this.width;
+        textCanvas.height = this.height;
+
+        textCtx.fillStyle = this.foreColor;
+        textCtx.font = this.font;
+        textCtx.textBaseline = "top";
         var strList = this.text.split("\r\n");
         var fontHeight = sui.util.getTextHeight(strList[0], this.font);
-        ctx.translate(this.padding.left, (this.height - fontHeight) / 2);
+        textCtx.translate(this.padding.left, (this.height - fontHeight) / 2);
         for (var i = 0; i < strList.length; i++) {
             if (this.passwordChar) strList[i] = strList[i].replace(/(.)/g, this.passwordChar);
-            ctx.fillText(strList[i], 0, fontHeight * i);
+            textCtx.fillText(strList[i], 0, fontHeight * i);
         }
-        ctx.translate(-this.padding.left, -((this.height - fontHeight) / 2));
-        ctx.clearRect(this.width - this.padding.right, 0, this.padding.right, this.height);
+        textCtx.translate(-this.padding.left, -((this.height - fontHeight) / 2));
+        textCtx.clearRect(this.width - this.padding.right, 0, this.padding.right, this.height);
+        ctx.drawImage(textCanvas, 0, 0);
 
-        ctx.strokeStyle = "#888";
-        switch (this.borderStyle) {
-            case sui.borderStyle.fixedSingle:
-                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
-                break;
-            case sui.borderStyle.fixed3D:
-                ctx.shadowColor = "rgba(50, 50, 50, 0.6)";
-                ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
-                ctx.shadowBlur = 5;
-                ctx.strokeStyle = "rgba(0,0,0,0)";
-                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
-                ctx.strokeStyle = "#888";
-                ctx.strokeRect(1, 1, this.width - 2, this.height - 2);
-                break;
-        }
+        ctx.restore();
     };
 
     sui.TextBox = TextBox;

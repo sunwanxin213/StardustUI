@@ -103,6 +103,24 @@
         standard: 2
     };
 
+    // 指定控件的外观
+    obj.appearance = {
+        // 由控件类定义的默认外观
+        normal: 0,
+        // 按钮的外观
+        button: 1
+    };
+
+    // 指定一个控件的状态，例如复选框可以是选中、未选中或设置为不确定状态
+    obj.checkState = {
+        // 该控件处于未选中状态
+        unchecked: 0,
+        // 该控件处于选中状态
+        checked: 1,
+        // 该控件处于不确定状态，一个不确定的控件通常具有灰色的外观
+        indeterminate: 2
+    };
+
     for (var i in obj) {
         if (!obj.isPrototypeOf(i)) {
             sui[i] = obj[i];

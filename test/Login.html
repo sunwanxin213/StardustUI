@@ -10,6 +10,7 @@
     <script src="../src/controls/SUI-Lable.js"></script>
     <script src="../src/controls/SUI-TextBox.js"></script>
     <script src="../src/controls/SUI-Button.js"></script>
+    <script src="../src/controls/SUI-CheckBox.js"></script>
     <script>
         window.onload = function () {
             var canvas = document.getElementById("demoCanvas");
@@ -51,11 +52,19 @@
             var button1 = new sui.Button();
             button1.font = font;
             button1.text = "登陆";
-            button1.location = { x: 275, y: 380 };
+            button1.location = { x: 275, y: 420 };
             button1.size = { width: 100, height: 40 };
             button1.onClick = function () {
                 alert("账号:" + textBox1.text + "\r\n" + "密码:" + textBox2.text);
             };
+
+            // 创建一个CheckBox控件
+            var checkBox1 = new sui.CheckBox();
+            checkBox1.font = "16px 宋体";
+            checkBox1.text = "我同意用户协议";
+            checkBox1.threeState = true;
+            checkBox1.location = { x: 100, y: 370 };
+            checkBox1.backColor = "rgba(0,0,0,0)";
 
             // 添加控件到环境
             sui.addControl(lable1);
@@ -63,6 +72,7 @@
             sui.addControl(textBox1);
             sui.addControl(textBox2);
             sui.addControl(button1);
+            sui.addControl(checkBox1);
 
             setInterval(function () {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

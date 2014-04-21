@@ -121,8 +121,63 @@
     sui.Control.prototype.onPaintBackground = function (ctx) {
         /// <summary>绘制控件背景事件</summary>
 
+        ctx.save();
         ctx.fillStyle = this.backColor;
         ctx.fillRect(0, 0, this.width, this.height);
+
+        // 控件平面样式外观
+        if ("flatStyle" in this) {
+            // 背景颜色
+            var c1 = "rgba(230,230,230,1)", c2 = "rgba(210,210,210,1)";
+            if (this._isMouseEnter) {
+                c1 = "rgba(210,210,210,1)", c2 = "rgba(230,230,230,1)";
+            }
+
+            /* 控件背景渐变颜色 */
+            var bgGradient = ctx.createLinearGradient(0, 0, 0, this.height);
+            bgGradient.addColorStop(0, c1);
+            bgGradient.addColorStop(0.5, c2);
+            bgGradient.addColorStop(1, c1);
+
+            switch (this.flatStyle) {
+                case sui.flatStyle.standard:
+                    ctx.fillStyle = bgGradient;
+                    ctx.fillRect(0, 0, this.width, this.height);
+                    break;
+                case sui.flatStyle.flat:
+                    if (this._isMouseEnter) {
+                        ctx.fillStyle = c2;
+                        ctx.fillRect(0, 0, this.width, this.height);
+                    }
+                    break;
+                case sui.flatStyle.popup:
+                    if (this._isMouseEnter) {
+                        ctx.fillStyle = bgGradient;
+                        ctx.fillRect(0, 0, this.width, this.height);
+                    }
+                    break;
+            }
+        }
+
+        // 控件边框样式
+        if ("borderStyle" in this) {
+            ctx.strokeStyle = "#888";
+            switch (this.borderStyle) {
+                case sui.borderStyle.fixedSingle:
+                    ctx.strokeRect(0, 0, this.width, this.height);
+                    break;
+                case sui.borderStyle.fixed3D:
+                    ctx.shadowColor = "rgba(50, 50, 50, 0.6)";
+                    ctx.shadowOffsetX = ctx.shadowOffsetY = 0;
+                    ctx.shadowBlur = 5;
+                    ctx.strokeStyle = "rgba(0,0,0,0)";
+                    ctx.strokeRect(0, 0, this.width, this.height);
+                    ctx.strokeStyle = "#888";
+                    ctx.strokeRect(0, 0, this.width, this.height);
+                    break;
+            }
+        }
+        ctx.restore();
     };
 
 

@@ -15,7 +15,7 @@ void function (sui) {
         number++;
 
         // 设置控件默认内边距
-        this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
+        this.padding = { left: 0, right: 0, top: 0, bottom: 0 };
         // 设置控件默认宽度
         this.width = 75;
         // 设置控件默认高度
@@ -25,6 +25,11 @@ void function (sui) {
         // 设置控件内容文本对齐方式
         this.textAlign = sui.contentAlignment.middleCenter;
 
+        // 设置边框样式属性
+        Object.defineProperty(this, "borderStyle", {
+            get: function () { return sui.borderStyle.fixedSingle; }
+        })
+
         // 文本被改变事件
         this.onClick;
 
@@ -32,8 +37,8 @@ void function (sui) {
         this.isMouseEnter = false;
         // 监测样式变更
         this.addEventListener("mousemove", function (e) {
-            if (sui.util.bounds(e, _this)) _this.isMouseEnter = true;
-            else _this.isMouseEnter = false;
+            if (sui.util.bounds(e, _this)) _this._isMouseEnter = true;
+            else _this._isMouseEnter = false;
         }, false);
 
         // 设置点击后进入编辑模式
@@ -59,47 +64,10 @@ void function (sui) {
         }
     };
 
-    button.onPaintBackground = function (ctx) {
-        /// <summary>绘制控件背景事件</summary>
-
-        // 背景颜色
-        var c1 = "rgba(230,230,230,1)", c2 = "rgba(210,210,210,1)";
-        if (this.isMouseEnter) {
-            c1 = "rgba(210,210,210,1)", c2 = "rgba(230,230,230,1)";
-        }
-
-        /* 控件背景渐变颜色 */
-        var bgGradient = ctx.createLinearGradient(0, 0, 0, this.height);
-        bgGradient.addColorStop(0, c1);
-        bgGradient.addColorStop(0.5, c2);
-        bgGradient.addColorStop(1, c1);
-
-        switch (this.flatStyle) {
-            case sui.flatStyle.standard:
-                ctx.fillStyle = bgGradient;
-                ctx.fillRect(0, 0, this.width, this.height);
-                break;
-            case sui.flatStyle.flat:
-                if (this.isMouseEnter) {
-                    ctx.fillStyle = c2;
-                    ctx.fillRect(0, 0, this.width, this.height);
-                }
-                break;
-            case sui.flatStyle.popup:
-                if (this.isMouseEnter) {
-                    ctx.fillStyle = bgGradient;
-                    ctx.fillRect(0, 0, this.width, this.height);
-                }
-                break;
-        }
-
-        // 绘制边框
-        ctx.strokeStyle = "#888";
-        ctx.strokeRect(0, 0, this.width, this.height);
-    };
-
     button.onPaint = function (canvas, ctx) {
         /// <summary>绘制控件</summary>
+
+        ctx.save();
 
         ctx.fillStyle = this.foreColor;
         ctx.font = this.font;
@@ -107,6 +75,8 @@ void function (sui) {
         ctx.fillText(this.text,
                      (this.width - sui.util.getTextWidth(this.text, this.font)) / 2,
                      (this.height - sui.util.getTextHeight(this.text, this.font)) / 2);
+
+        ctx.restore();
     };
 
     sui.Button = Button;

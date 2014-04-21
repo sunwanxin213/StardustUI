@@ -58,6 +58,8 @@
     lable.onPaint = function (canvas, ctx) {
         /// <summary>绘制控件</summary>
 
+        ctx.save();
+
         ctx.fillStyle = this.foreColor;
         ctx.font = this.font;
         ctx.textBaseline = "top";
@@ -68,6 +70,8 @@
             ctx.fillText(strList[i], 0, fontHeight * i);
         }
         ctx.translate(-this.padding.left, -this.padding.top);
+
+        ctx.restore();
     };
 
     sui.Lable = Lable;
