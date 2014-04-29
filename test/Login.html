@@ -74,19 +74,18 @@
             sui.addControl(button1);
             sui.addControl(checkBox1);
 
-            var buttonColor = 0;
             setInterval(function () {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                buttonColor++;
-                if (buttonColor >= 360) buttonColor = 0;
-                button1.backColor = "hsla(" + buttonColor + ", 100%, 50%, 1)";
                 // 绘制整个环境
                 sui.draw();
             }, 1000 / 60);
         };
     </script>
+
+    <link rel="stylesheet" href="styles/reset.css" />
+    <link rel="stylesheet" href="styles/share.css" />
 </head>
 <body>
-    <canvas id="demoCanvas" width="640" height="480" style="border: 1px solid #000; position: absolute; left: 200px;"></canvas>
+    <canvas id="demoCanvas" width="800" height="600"></canvas>
 </body>
 </html>

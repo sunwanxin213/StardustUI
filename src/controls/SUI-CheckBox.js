@@ -41,7 +41,7 @@ void function (sui) {
 
         // 设置点击后进入编辑模式
         this.addEventListener("click", function (e) {
-            if (!sui.util.bounds(e, _this) || !_this.isVisible) return;
+            if (!sui.util.bounds(e, _this) || !_this.isVisible || !_this.isEnable) return;
             if (window.event) e.cancelBubble = true;
             else e.stopPropagation();
             if (_this.threeState) {
@@ -75,7 +75,7 @@ void function (sui) {
 
         ctx.save();
 
-        ctx.fillStyle = "rgba(50,50,50,0.1)";
+        ctx.fillStyle = "#fff";
         ctx.fillRect(this.padding.left, (this.height - 15) / 2, 15, 15);
         ctx.strokeStyle = "#888";
         ctx.strokeRect(this.padding.left, (this.height - 15) / 2, 15, 15);

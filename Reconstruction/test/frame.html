@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script src="../src/core/SUI.js"></script>
+    <script src="../src/core/Enum.js"></script>
+    <script src="../src/util/Page.js"></script>
+    <script src="../src/util/Ime.js"></script>
+    <script src="../src/controls/Base.js"></script>
+    <script src="../src/controls/Window.js"></script>
+    <script src="../src/controls/Lable.js"></script>
+    <script src="../src/controls/TextBox.js"></script>
+    <script src="../src/loader/Base.js"></script>
+    <script src="../src/loader/Style.js"></script>
+    <script src="../src/loader/Csharp.js"></script>
+    <script src="../src/loader/QtUi.js"></script>
+    <script src="../src/loader/VbDoNet.js"></script>
+    <script>
+        window.onload = function () {
+            var canvas = document.getElementById("testCanvas");
+            var ctx = canvas.getContext("2d");
+            var sui = new $S(ctx);
+
+            var font = "24px 宋体";
+
+            var window1 = new sui.Control.Window();
+
+            // 创建一个Lable控件
+            var lable1 = new sui.Control.Lable();
+            lable1.text = "请输入账号:";
+            lable1.font = font;
+            lable1.location = { x: 50, y: 200 };
+            lable1.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个Lable控件
+            var lable2 = new sui.Control.Lable();
+            lable2.text = "请输入密码:";
+            lable2.font = font;
+            lable2.location = { x: 50, y: 300 };
+            lable2.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个TextBox控件
+            var textBox1 = new sui.Control.TextBox();
+            textBox1.font = "24px 宋体";
+            textBox1.text = "";
+            textBox1.imeMode = sui.Enum.imeMode.on;
+            textBox1.width = 300;
+            textBox1.location = { x: 200, y: 200 };
+
+            // 创建一个TextBox控件
+            var textBox2 = new sui.Control.TextBox();
+            textBox2.font = "24px 宋体";
+            textBox2.text = "";
+            textBox2.width = 300;
+            textBox2.passwordChar = "*";
+            textBox2.location = { x: 200, y: 300 };
+
+            window1.addControl(lable1);
+            window1.addControl(lable2);
+            window1.addControl(textBox1);
+            window1.addControl(textBox2);
+
+            sui.useWindow(window1);
+
+            setInterval(function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                sui.update();
+                sui.draw();
+            }, 60);
+        };
+    </script>
+</head>
+<body>
+    <canvas id="testCanvas" width="800" height="600"></canvas>
+</body>
+</html>

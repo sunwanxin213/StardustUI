@@ -27,7 +27,7 @@ void function (sui) {
 
         // 设置边框样式属性
         Object.defineProperty(this, "borderStyle", {
-            get: function () { return sui.borderStyle.fixedSingle; }
+            get: function () { return sui.borderStyle.fixed3D; }
         })
 
         // 文本被改变事件
@@ -41,8 +41,9 @@ void function (sui) {
             else _this._isMouseEnter = false;
         }, false);
 
-        // 设置点击后进入编辑模式
+        // 设置点击事件
         this.addEventListener("click", function (e) {
+            if (!_this.isEnable) return;
             if (!sui.util.bounds(e, _this) || !_this.isVisible) return;
             if (window.event) e.cancelBubble = true;
             else e.stopPropagation();
