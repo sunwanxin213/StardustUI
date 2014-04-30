@@ -11,6 +11,8 @@
     <script src="../src/controls/Window.js"></script>
     <script src="../src/controls/Lable.js"></script>
     <script src="../src/controls/TextBox.js"></script>
+    <script src="../src/controls/Button.js"></script>
+    <script src="../src/controls/CheckBox.js"></script>
     <script src="../src/loader/Base.js"></script>
     <script src="../src/loader/Style.js"></script>
     <script src="../src/loader/Csharp.js"></script>
@@ -25,11 +27,13 @@
             var font = "24px 宋体";
 
             var window1 = new sui.Control.Window();
+            window1.backColor = "#6395EC";
 
             // 创建一个Lable控件
             var lable1 = new sui.Control.Lable();
             lable1.text = "请输入账号:";
             lable1.font = font;
+            lable1.foreColor = "#fff";
             lable1.location = { x: 50, y: 200 };
             lable1.backColor = "rgba(0,0,0,0)";
 
@@ -37,6 +41,7 @@
             var lable2 = new sui.Control.Lable();
             lable2.text = "请输入密码:";
             lable2.font = font;
+            lable2.foreColor = "#fff";
             lable2.location = { x: 50, y: 300 };
             lable2.backColor = "rgba(0,0,0,0)";
 
@@ -56,10 +61,31 @@
             textBox2.passwordChar = "*";
             textBox2.location = { x: 200, y: 300 };
 
+            // 创建一个Button控件
+            var button1 = new sui.Button();
+            button1.font = font;
+            button1.text = "登录";
+            button1.location = { x: 275, y: 420 };
+            button1.size = { width: 100, height: 40 };
+            button1.backColor = "#ff0";
+            button1.onClick = function () {
+                alert("账号:" + textBox1.text + "\r\n" + "密码:" + textBox2.text);
+            };
+
+            // 创建一个CheckBox控件
+            var checkBox1 = new sui.CheckBox();
+            checkBox1.font = "16px 宋体";
+            checkBox1.text = "我同意用户协议";
+            checkBox1.threeState = true;
+            checkBox1.location = { x: 100, y: 370 };
+            checkBox1.backColor = "rgba(0,0,0,0)";
+
             window1.addControl(lable1);
             window1.addControl(lable2);
             window1.addControl(textBox1);
             window1.addControl(textBox2);
+            window1.addControl(button1);
+            window1.addControl(checkBox1);
 
             sui.useWindow(window1);
 
@@ -67,7 +93,7 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 sui.update();
                 sui.draw();
-            }, 60);
+            }, 1000 / 60);
         };
     </script>
 </head>

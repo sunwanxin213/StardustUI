@@ -47,6 +47,8 @@
             for (var i = cl.length; i--;) {
                 control = cl[i];
                 if (_this.Util.Page.bounds(e, control) && control.visible && control.enable) {
+                    control._isMouseEnter = true;
+                    control.hasChange = true;
                     callback && callback(control);
                     if (control != _this.currentWindow) {
                         if (window.event) e.cancelBubble = true;
@@ -54,6 +56,7 @@
                     }
                     break;
                 } else {
+                    control._isMouseEnter = false;
                     e.target.style.cursor = "default";
                 }
             }
@@ -92,7 +95,6 @@
 
             if (!(window instanceof this.Control.Window)) return this.currentWindow = null;
             window.size = { width: this.element.width, height: this.element.height };
-            window.location = { left: 0, top: 0 };
             window.zIndex = 0;
             this.currentWindow = window;
         },
@@ -103,12 +105,12 @@
             var _this = this;
 
             this.mouseEventProcess(e, function (control) {
+                control._onMouseMove && control._onMouseMove(e);
                 for (var i in _this.Enum.cursors) {
                     if (_this.Enum.cursors[i] == control.cursor) {
                         return e.target.style.cursor = i;
                     }
                 }
-                control._onMouseMove && control._onMouseMove(e);
             });
         },
         onClick: function (e) {
@@ -118,6 +120,7 @@
             var _this = this;
 
             this.mouseEventProcess(e, function (control) {
+                control._onClick && control._onClick(e);
                 switch (control.imeMode) {
                     case _this.Enum.imeMode.on:
                         _this.Util.Ime.enable();
@@ -126,40 +129,40 @@
                         _this.Util.Ime.close();
                         break;
                 }
-                control._onClick && control._onClick(e);
             });
         },
         update: function () {
             /// <summary>更新内容</summary>
 
             if (!this.currentWindow) return;
-            var control = null,
-                cl = this.currentWindow.controls;
+            var window = this.currentWindow,
+                control = null,
+                cl = window.controls;
             function updateSub(parent, cl) {
                 if (!parent.visible) return;
-                parent.onSet();
-                parent.onPaintBackground();
-                parent.onPaint();
+                parent.onSet() || parent.onPaintBackground() || parent.onPaint();
                 for (var i = 0; i < cl.length; i++) {
                     control = cl[i];
-                    control.onSet();
-                    control.onPaintBackground();
-                    control.onPaint();
+                    if (control.hasChange) {
+                        control.onSet() || control.onPaintBackground() || control.onPaint();
+                        control.hasChange = false;
+                    }
                     if (control.controls.length) {
                         updateSub(control, control.controls);
                     }
                 }
             }
-            updateSub(this.currentWindow, cl);
+            updateSub(window, cl);
         },
         draw: function () {
             /// <summary>绘制界面</summary>
-            
+
             var _this = this;
 
             if (!this.currentWindow) return;
-            var control = null,
-                cl = this.currentWindow.controls;
+            var window = this.currentWindow,
+                control = null,
+                cl = window.controls;
             cl.sort(function (n, m) { return n.zIndex > m.zIndex; });
             function drawSub(parent, cl) {
                 if (!parent.visible) return;
@@ -173,8 +176,8 @@
                 }
                 _this.context.drawImage(parent.bufferCanvas, 0, 0);
             }
-            drawSub(this.currentWindow, cl);
-            this.context.drawImage(this.currentWindow.bufferCanvas, 0, 0);
+            drawSub(window, cl);
+            this.context.drawImage(window.bufferCanvas, 0, 0);
         }
     };
 
@@ -219,6 +222,33 @@
         }
 
         return tempStr;
+    };
+
+    CanvasRenderingContext2D.prototype.drawRoundRect = function (x, y, w, h, r, lineWidth, isFill) {
+        /// <summary>绘制空心圆角矩形</summary>
+
+        // 检查半径是否合理
+        r = w < (2 * r) ? (w / 2) : h < (2 * r) ? (h / 2) : r;
+
+        this.lineWidth = lineWidth || 1.0;
+        //if (isBeginConvert) {
+        //    x *= -0.5;
+        //    y *= -0.5;
+        //}
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        if (isFill ? this.fill() : this.stroke()) { };
+    };
+
+    CanvasRenderingContext2D.prototype.fillRoundRect = function (x, y, w, h, r, lineWidth) {
+        /// <summary>绘制实心圆角矩形</summary>
+
+        this.drawRoundRect(x, y, w, h, r, lineWidth, true);
     };
 
     w.StardustUI = w.$S = StardustUI;

@@ -1,5 +1,8 @@
 ﻿void function ($S) {
 
+    var _page = $S.Util.Page;
+    var _enum = $S.Enum;
+
     function Lable() {
         $S.Control.apply(this, arguments);
 
@@ -12,7 +15,7 @@
         // 设置控件默认高度
         this.size.height = 120;
         // 设置控件内容文本对齐方式
-        this.textAlign = $S.Enum.contentAlignment.topLeft;
+        this.textAlign = _enum.contentAlignment.topLeft;
         // 设置控件默认内边距
         this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
 
@@ -40,8 +43,8 @@
                 maxHeight = 0;
             var strList = this.text.split("\r\n");
             for (var i = strList.length; i--;) {
-                maxWidth = Math.max(maxWidth, $S.Util.Page.getTextWidth(strList[i], this.font));
-                maxHeight = Math.max(maxHeight, $S.Util.Page.getTextHeight(strList[i], this.font));
+                maxWidth = Math.max(maxWidth, _page.getTextWidth(strList[i], this.font));
+                maxHeight = Math.max(maxHeight, _page.getTextHeight(strList[i], this.font));
             }
             maxWidth += this.padding.left + this.padding.right;
             this.bufferCanvas.width = this.size.width = maxWidth;
@@ -60,7 +63,7 @@
         ctx.font = this.font;
         ctx.textBaseline = "top";
         var strList = this.text.split("\r\n");
-        var fontHeight = $S.Util.Page.getTextHeight(strList[0], this.font);
+        var fontHeight = _page.getTextHeight(strList[0], this.font);
         ctx.translate(this.padding.left, this.padding.top);
         for (var i = 0; i < strList.length; i++) {
             ctx.fillText(strList[i], 0, fontHeight * i);

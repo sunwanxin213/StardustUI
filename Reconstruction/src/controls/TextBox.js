@@ -1,5 +1,8 @@
 ﻿void function ($S) {
 
+    var _page = $S.Util.Page;
+    var _enum = $S.Enum;
+
     function TextBox() {
         $S.Control.apply(this, arguments);
 
@@ -12,21 +15,21 @@
         // 设置控件默认高度
         this.height = 21;
         // 设置控件内容文本对齐方式
-        this.textAlign = $S.Enum.contentAlignment.left;
+        this.textAlign = _enum.contentAlignment.left;
         // 指示所有字符应保持不变还是应该转换为大写或小写
-        this.characterCasing = $S.Enum.characterCasing.normal;
+        this.characterCasing = _enum.characterCasing.normal;
         // 指定可以在编辑控件中输入的最大字符数
         this.maxLength = 32767;
         // 控制能否更改编辑控件中的文本
         this.readOnly = false;
         // 设置控件默认光标为文本
-        this.cursor = $S.Enum.cursors.text;
+        this.cursor = _enum.cursors.text;
         // 设置控件默认背景颜色
         this.backColor = "#fff";
         // 指示将为单行编辑控件的密码输入显示的字符
         var passwordChar = null;
         // 设置控件默认边框
-        var borderStyle = $S.Enum.borderStyle.fixed3D;
+        var borderStyle = _enum.borderStyle.fixed3D;
 
         // 设置默认文本
         var text = "textBox";
@@ -34,21 +37,20 @@
             get: function () { return text; },
             set: function (value) {
                 switch (_this.characterCasing) {
-                    case $S.Enum.characterCasing.lower:
+                    case _enum.characterCasing.lower:
                         value = value.toLowerCase();
                         break;
-                    case $S.Enum.characterCasing.upper:
+                    case _enum.characterCasing.upper:
                         value = value.toUpperCase();
                         break;
                 }
                 if (_this.onTextChanged && text != value) {
-                    _this.onTextChanged({
-                        oldValue: text,
-                        newValue: value
-                    });
+                    _this.onTextChanged({ oldValue: text, newValue: value });
                 }
                 text = value;
-            }
+                _this.hasChange = true;
+            },
+            configurable: true
         });
 
         // 文本被改变事件
@@ -59,23 +61,28 @@
             get: function () { return passwordChar; },
             set: function (value) {
                 value && (passwordChar = value[0]);
-            }
+                _this.hasChange = true;
+            },
+            configurable: true
         });
 
         // 控件默认边框属性
         Object.defineProperty(this, "borderStyle", {
             get: function () { return borderStyle; },
             set: function (value) {
+                if (borderStyle == value) return;
                 borderStyle = value;
                 switch (value) {
-                    case $S.Enum.borderStyle.fixedSingle:
+                    case _enum.borderStyle.fixedSingle:
                         _this.padding = { left: 1, right: 1, top: 1, bottom: 1 };
                         break;
-                    case $S.Enum.borderStyle.fixed3D:
+                    case _enum.borderStyle.fixed3D:
                         _this.padding = { left: 3, right: 3, top: 3, bottom: 3 };
                         break;
                 }
-            }
+                _this.hasChange = true;
+            },
+            configurable: true
         });
     }
 
@@ -91,28 +98,33 @@
     // 缓存textBox对象原型
     var textBox = TextBox.prototype;
 
+    var input = null;
     textBox._onClick = function (e) {
         // 设置点击后进入编辑模式
 
         var _this = this;
 
-        if (!$S.Util.Page.bounds(e, this) || !this.visible) return;
+        if (!_page.bounds(e, this) || !this.visible || !this.enable) return;
         if (window.event) e.cancelBubble = true;
         else e.stopPropagation();
 
-        var input = document.createElement("input");
+        _this.hasChange = true;
+        input = document.createElement("input");
         input.type = this.passwordChar ? "password" : "text";
         input.id = "SUI-TextBox-Input" + +(new Date());
         input.value = this.text;
         input.maxLength = this.maxLength;
-        input.readOnly = !this.enable || this.readOnly;
-        input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid #000;outline:none;" +
-                             "left:" + (e.pageX - (e.offsetX || e.layerX) + this.location.x) + "px;" +
-                             "top:" + (e.pageY - (e.offsetY || e.layerY) + this.location.y) + "px;" +
-                             "width:" + (this.width) + "px;" +
-                             "height:" + (this.height) + "px;" +
-                             "line-height:" + (this.height) + "px;" +
-                             "font:" + this.font + ";";
+        input.readOnly = this.readOnly;
+        input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid rgba(50,50,50,0.8);outline:none;" +
+                              "left:" + (e.pageX - (e.offsetX || e.layerX) + this.location.x) + "px;" +
+                              "top:" + (e.pageY - (e.offsetY || e.layerY) + this.location.y) + "px;" +
+                              "padding-left:" + _this.padding.left + "px;" +
+                              "width:" + (this.width - _this.padding.right / 2 - _this.padding.left) + "px;" +
+                              "height:" + (this.height - _this.padding.bottom / 2) + "px;" +
+                              "line-height:" + (this.height) + "px;" +
+                              "font:" + this.font + ";" +
+                              "color:" + this.foreColor + ";" +
+                              "background:" + this.backColor;
         input.addEventListener("keydown", function (ke) {
             if (ke.keyCode == 13) {
                 if (window.event) ke.cancelBubble = true;
@@ -126,10 +138,12 @@
             $S.Util.Ime.close();
             _this.text = input.value;
             document.body.removeChild(input);
+            input = null;
+            _this.hasChange = true;
         });
         document.body.appendChild(input);
         input.focus();
-        $S.Util.Page.setCaretPosition(input, input.value.length);
+        _page.setCaretPosition(input, input.value.length);
 
         this.onClick && this.onClick(e);
     };
@@ -137,13 +151,16 @@
     textBox.onSet = function () {
         /// <summary>设置控件</summary>
 
-        this.bufferCanvas.height = this.height = $S.Util.Page.getTextHeight(this.text || "你", this.font) + (this.padding.top + this.padding.bottom);
+        this.bufferCanvas.width = this.width;
+        this.bufferCanvas.height = this.height = _page.getTextHeight(this.text || "你", this.font) + (this.padding.top + this.padding.bottom);
     };
 
     textBox.onPaint = function () {
         /// <summary>绘制控件</summary>
 
         var ctx = this.bufferCtx;
+
+        if (input) return;
 
         ctx.save();
 
@@ -154,7 +171,7 @@
         textCtx.font = this.font;
         textCtx.textBaseline = "top";
         var strList = this.text.split("\r\n");
-        var fontHeight = $S.Util.Page.getTextHeight(strList[0], this.font);
+        var fontHeight = _page.getTextHeight(strList[0], this.font);
         textCtx.translate(this.padding.left, (this.height - fontHeight) / 2);
         for (var i = 0; i < strList.length; i++) {
             if (this.passwordChar) strList[i] = strList[i].replace(/(.)/g, this.passwordChar);

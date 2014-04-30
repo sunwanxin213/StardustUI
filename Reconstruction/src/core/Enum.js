@@ -22,7 +22,9 @@
         // 单行边框,
         fixedSingle: 1,
         // 三维边框
-        fixed3D: 2
+        fixed3D: 2,
+        // 圆角边框
+        round: 3
     };
 
     // 光标

@@ -1555,8 +1555,8 @@
                                                     case !m.a && m.c && m.s && 77 === f: P.d("prop");
                                                         break;
                                                         // 防止用户手动关闭
-                                                    //case !m.a && m.c && 32 === f: S.toggle();
-                                                    //    break;
+                                                        //case !m.a && m.c && 32 === f: S.toggle();
+                                                        //    break;
                                                     case m.a && m.c && 32 === f: 1 === p.b("iptMode") ? U.e("wb") : U.e("py");
                                                         break;
                                                     default:
@@ -2403,8 +2403,6 @@
                                 a: function () {
                                     var y;
                                     y = c.c();
-                                    y = p.b("cgiPrx") + "reportfirst?key=" + p.b("prvKey") + "&version=838&sp=" + p.b("lnchr") + "&t=" + Ba;
-                                    o(y);
                                     w = p.b("cgiPrx") + "reportcnt?key=" + p.b("prvKey")
                                 },
                                 b: function (y) {
