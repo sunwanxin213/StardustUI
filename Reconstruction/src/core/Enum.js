@@ -131,6 +131,16 @@
         on: 1
     };
 
+    // 制定LinkLable链接的行为
+    Enum.linkBehavior = {
+        // 该链接始终显示为带下划线的文本
+        alwaysUnderline: 1,
+        // 仅当鼠标悬停在链接文本上时，该链接才显示带下划线的文本
+        hoverUnderline: 2,
+        // 链接文本从不带下划线。仍可使用LinkLable控件的LinkColor属性将该链接与其他文本区分开
+        neverUnderline: 3
+    };
+
     Object.defineProperty($S, "Enum", {
         get: function () {
             return Enum;

@@ -10,6 +10,7 @@
     <script src="../src/controls/Base.js"></script>
     <script src="../src/controls/Window.js"></script>
     <script src="../src/controls/Lable.js"></script>
+    <script src="../src/controls/LinkLable.js"></script>
     <script src="../src/controls/TextBox.js"></script>
     <script src="../src/controls/Button.js"></script>
     <script src="../src/controls/CheckBox.js"></script>
@@ -27,14 +28,15 @@
             var font = "24px 宋体";
 
             var window1 = new sui.Control.Window();
-            window1.backColor = "#6395EC";
+            window1.borderStyle = sui.Enum.borderStyle.round;
+            //window1.backColor = "#6395EC";
 
             // 创建一个Lable控件
             var lable1 = new sui.Control.Lable();
             lable1.text = "请输入账号:";
             lable1.font = font;
             lable1.foreColor = "#fff";
-            lable1.location = { x: 50, y: 200 };
+            lable1.location = { x: 150, y: 200 };
             lable1.backColor = "rgba(0,0,0,0)";
 
             // 创建一个Lable控件
@@ -42,7 +44,7 @@
             lable2.text = "请输入密码:";
             lable2.font = font;
             lable2.foreColor = "#fff";
-            lable2.location = { x: 50, y: 300 };
+            lable2.location = { x: 150, y: 300 };
             lable2.backColor = "rgba(0,0,0,0)";
 
             // 创建一个TextBox控件
@@ -51,7 +53,7 @@
             textBox1.text = "";
             textBox1.imeMode = sui.Enum.imeMode.on;
             textBox1.width = 300;
-            textBox1.location = { x: 200, y: 200 };
+            textBox1.location = { x: 320, y: 200 };
 
             // 创建一个TextBox控件
             var textBox2 = new sui.Control.TextBox();
@@ -59,13 +61,13 @@
             textBox2.text = "";
             textBox2.width = 300;
             textBox2.passwordChar = "*";
-            textBox2.location = { x: 200, y: 300 };
+            textBox2.location = { x: 320, y: 300 };
 
             // 创建一个Button控件
             var button1 = new sui.Button();
             button1.font = font;
             button1.text = "登录";
-            button1.location = { x: 275, y: 420 };
+            button1.location = { x: 350, y: 420 };
             button1.size = { width: 100, height: 40 };
             button1.backColor = "#ff0";
             button1.onClick = function () {
@@ -75,10 +77,20 @@
             // 创建一个CheckBox控件
             var checkBox1 = new sui.CheckBox();
             checkBox1.font = "16px 宋体";
-            checkBox1.text = "我同意用户协议";
+            checkBox1.text = "我同意";
             checkBox1.threeState = true;
-            checkBox1.location = { x: 100, y: 370 };
+            checkBox1.location = { x: 150, y: 370 };
             checkBox1.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个LinkLable控件
+            var linkLable1 = new sui.Control.LinkLable();
+            linkLable1.text = "用户协议";
+            linkLable1.font = "16px 宋体";
+            linkLable1.location = { x: 218, y: 370 };
+            linkLable1.backColor = "rgba(0,0,0,0)";
+            linkLable1.onClick = function () {
+                alert("演示怎么会有这种狗屁东西存在呢，吼吼。");
+            };
 
             window1.addControl(lable1);
             window1.addControl(lable2);
@@ -86,10 +98,16 @@
             window1.addControl(textBox2);
             window1.addControl(button1);
             window1.addControl(checkBox1);
+            window1.addControl(linkLable1);
 
             sui.useWindow(window1);
 
+            var windowBg = 0;
             setInterval(function () {
+
+                if (windowBg++ >= 360) windowBg = 0;
+                window1.backColor = "hsla(" + windowBg + ",100%,50%,0.1)";
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 sui.update();
                 sui.draw();
@@ -97,7 +115,7 @@
         };
     </script>
 </head>
-<body>
+<body style="margin: 0; padding: 0; text-align: center; background: url(background.png);">
     <canvas id="testCanvas" width="800" height="600"></canvas>
 </body>
 </html>

@@ -22,6 +22,12 @@
             get: function () { return context; }
         });
 
+        // 禁止右键菜单
+        this.element.oncontextmenu = function () { return false; };
+
+        // 禁止拖拽
+        this.element.setAttribute("draggable", "false");
+
         // 窗口列表
         this.windows = [];
 
