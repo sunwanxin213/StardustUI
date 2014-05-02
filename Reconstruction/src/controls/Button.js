@@ -20,10 +20,17 @@
         this.textAlign = _enum.contentAlignment.middleCenter;
         // 设置默认文本
         this.text = "button";
-
         // 设置边框样式属性
+        var borderStyle = _enum.borderStyle.fixedSingle;
         Object.defineProperty(this, "borderStyle", {
-            get: function () { return _enum.borderStyle.round; }
+            get: function () { return borderStyle; },
+            set: function (value) {
+                borderStyle = value;
+                if (value == _enum.borderStyle.fixed3D) {
+                    borderStyle = _enum.borderStyle.round;
+                }
+                _this.hasChange = true;
+            }
         });
     }
 

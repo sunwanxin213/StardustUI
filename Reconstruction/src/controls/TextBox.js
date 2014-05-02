@@ -130,17 +130,18 @@
                 if (window.event) ke.cancelBubble = true;
                 else ke.stopPropagation();
                 input.blur();
-                $S.Util.Ime.close();
             }
         }, false);
         // 当点击到其他区域时取消编辑状态
         input.addEventListener("blur", function () {
             $S.Util.Ime.close();
+            if ($S.Util.Ime.isEnable()) return;
             _this.text = input.value;
             document.body.removeChild(input);
             input = null;
             _this.hasChange = true;
         });
+        input.parentControl = this;
         document.body.appendChild(input);
         input.focus();
         _page.setCaretPosition(input, input.value.length);
@@ -160,7 +161,7 @@
 
         var ctx = this.bufferCtx;
 
-        if (input) return;
+        if (input && input.parentControl == this) return;
 
         ctx.save();
 

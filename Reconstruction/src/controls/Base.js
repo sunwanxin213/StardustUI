@@ -22,9 +22,6 @@
         // 当用户右击该控件时显示的快捷菜单
         this.contextMenuStrip = null;
 
-        // 边框圆角半径
-        this.borderRoundRadius = 45;
-
         // 指针移过该控件时显示的光标
         this.cursor = _enum.cursors.default;
 
@@ -89,6 +86,18 @@
                     backColor = value;
                     _this.hasChange = true;
                 }
+            },
+            configurable: true
+        });
+
+        // 边框圆角半径
+        var borderRoundRadius = 45;
+        Object.defineProperty(this, "borderRoundRadius", {
+            get: function () { return borderRoundRadius; },
+            set: function (value) {
+                if ((value = parseInt(value)) < 0) borderRoundRadius = 0;
+                else borderRoundRadius = value;
+                _this.hasChange = true;
             },
             configurable: true
         });
