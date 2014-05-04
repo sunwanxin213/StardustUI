@@ -14,6 +14,7 @@
     <script src="../src/controls/TextBox.js"></script>
     <script src="../src/controls/Button.js"></script>
     <script src="../src/controls/CheckBox.js"></script>
+    <script src="../src/controls/RadioButton.js"></script>
     <script src="../src/loader/Base.js"></script>
     <script src="../src/loader/Style.js"></script>
     <script src="../src/loader/Csharp.js"></script>
@@ -36,7 +37,7 @@
             lable1.text = "请输入账号:";
             lable1.font = font;
             lable1.foreColor = "#fff";
-            lable1.location = { x: 150, y: 200 };
+            lable1.location = { x: 150, y: 100 };
             lable1.backColor = "rgba(0,0,0,0)";
 
             // 创建一个Lable控件
@@ -44,8 +45,16 @@
             lable2.text = "请输入密码:";
             lable2.font = font;
             lable2.foreColor = "#fff";
-            lable2.location = { x: 150, y: 300 };
+            lable2.location = { x: 150, y: 200 };
             lable2.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个Lable控件
+            var lable3 = new sui.Control.Lable();
+            lable3.text = "性别:";
+            lable3.font = font;
+            lable3.foreColor = "#fff";
+            lable3.location = { x: 150, y: 300 };
+            lable3.backColor = "rgba(0,0,0,0)";
 
             // 创建一个TextBox控件
             var textBox1 = new sui.Control.TextBox();
@@ -53,7 +62,7 @@
             textBox1.text = "";
             textBox1.imeMode = sui.Enum.imeMode.on;
             textBox1.width = 300;
-            textBox1.location = { x: 320, y: 200 };
+            textBox1.location = { x: 320, y: 100 };
 
             // 创建一个TextBox控件
             var textBox2 = new sui.Control.TextBox();
@@ -61,7 +70,7 @@
             textBox2.text = "";
             textBox2.width = 300;
             textBox2.passwordChar = "*";
-            textBox2.location = { x: 320, y: 300 };
+            textBox2.location = { x: 320, y: 200 };
 
             // 创建一个Button控件
             var button1 = new sui.Button();
@@ -74,6 +83,23 @@
             button1.onClick = function () {
                 alert("账号:" + textBox1.text + "\r\n" + "密码:" + textBox2.text);
             };
+
+            // 创建一个RadioButton控件
+            var radioButton1 = new sui.RadioButton();
+            radioButton1.font = font;
+            radioButton1.foreColor = "#fff";
+            radioButton1.text = "男";
+            radioButton1.checked = true;
+            radioButton1.location = { x: 250, y: 300 };
+            radioButton1.backColor = "rgba(0,0,0,0)";
+
+            // 创建一个RadioButton控件
+            var radioButton2 = new sui.RadioButton();
+            radioButton2.font = font;
+            radioButton2.foreColor = "#fff";
+            radioButton2.text = "女";
+            radioButton2.location = { x: 350, y: 300 };
+            radioButton2.backColor = "rgba(0,0,0,0)";
 
             // 创建一个CheckBox控件
             var checkBox1 = new sui.CheckBox();
@@ -95,9 +121,12 @@
 
             window1.addControl(lable1);
             window1.addControl(lable2);
+            window1.addControl(lable3);
             window1.addControl(textBox1);
             window1.addControl(textBox2);
             window1.addControl(button1);
+            window1.addControl(radioButton1);
+            window1.addControl(radioButton2);
             window1.addControl(checkBox1);
             window1.addControl(linkLable1);
 

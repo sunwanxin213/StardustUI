@@ -496,7 +496,7 @@
                     ctx.strokeRect(0, 0, this.width, this.height);
                     break;
                 case _enum.borderStyle.round:
-                    ctx.drawRoundRect(0, 0, this.width, this.height, this.borderRoundRadius);
+                    ctx.strokeRoundRect(0, 0, this.width, this.height, this.borderRoundRadius);
                     break;
             }
         }

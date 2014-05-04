@@ -75,8 +75,8 @@
         var styleWidth = (style.width.replace(/\px/g, "")) | 0,
             styleHeight = (style.height.replace(/\px/g, "")) | 0;
 
-        var ex = e.offsetX || e.layerX;
-        var ey = e.offsetY || e.layerY;
+        var ex = e.layerX || e.offsetX;
+        var ey = e.layerY || e.offsetY;
 
         if (styleWidth) ex = (ex * (obj.width / styleWidth)) | 0;
         if (styleHeight) ey = (ey * (obj.height / styleHeight)) | 0;

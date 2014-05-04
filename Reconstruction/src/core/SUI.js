@@ -12,6 +12,11 @@
 
         var _this = this;
 
+        // 防止FireFox无法正确获取鼠标位置
+        if (document.defaultView.getComputedStyle(context.canvas).position == "static") {
+            context.canvas.style.position = "relative";
+        }
+
         // 元素对象[只读]
         Object.defineProperty(this, "element", {
             get: function () { return context.canvas; }
@@ -230,7 +235,7 @@
         return tempStr;
     };
 
-    CanvasRenderingContext2D.prototype.drawRoundRect = function (x, y, w, h, r, lineWidth, isFill) {
+    CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, w, h, r, lineWidth, isFill) {
         /// <summary>绘制空心圆角矩形</summary>
 
         // 检查半径是否合理
@@ -254,7 +259,7 @@
     CanvasRenderingContext2D.prototype.fillRoundRect = function (x, y, w, h, r, lineWidth) {
         /// <summary>绘制实心圆角矩形</summary>
 
-        this.drawRoundRect(x, y, w, h, r, lineWidth, true);
+        this.strokeRoundRect(x, y, w, h, r, lineWidth, true);
     };
 
     w.StardustUI = w.$S = StardustUI;
