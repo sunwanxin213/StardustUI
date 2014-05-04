@@ -135,7 +135,7 @@
         // 当点击到其他区域时取消编辑状态
         input.addEventListener("blur", function () {
             $S.Util.Ime.close();
-            if ($S.Util.Ime.isEnable()) return;
+            if ($S.Util.Ime.isEnable && $S.Util.Ime.isEnable()) return;
             _this.text = input.value;
             document.body.removeChild(input);
             input = null;
