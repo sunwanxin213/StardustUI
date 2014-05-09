@@ -113,5 +113,5 @@
         ctx.restore();
     };
 
-    $S.CheckBox = CheckBox;
+    $S.Control.CheckBox = CheckBox;
 }(StardustUI.prototype);

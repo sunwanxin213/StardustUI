@@ -63,5 +63,5 @@
         ctx.restore();
     };
 
-    $S.Button = Button;
+    $S.Control.Button = Button;
 }(StardustUI.prototype);

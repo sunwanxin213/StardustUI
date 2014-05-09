@@ -105,5 +105,5 @@
         ctx.restore();
     };
 
-    $S.RadioButton = RadioButton;
+    $S.Control.RadioButton = RadioButton;
 }(StardustUI.prototype);
