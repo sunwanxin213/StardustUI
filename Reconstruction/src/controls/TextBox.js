@@ -115,16 +115,31 @@
         input.value = this.text;
         input.maxLength = this.maxLength;
         input.readOnly = this.readOnly;
+
+        var obj = e.target;
+        var style = document.defaultView.getComputedStyle(obj);
+        var styleWidth = (style.width.replace(/\px/g, "")) | 0,
+            styleHeight = (style.height.replace(/\px/g, "")) | 0;
+        var scaleW = (styleWidth / obj.width),
+            scaleH = (styleHeight / obj.height);
+
+        var fontMatch = this.font.match(/(\d+)(px|PX)/);
+        var scaleFont = this.font;
+        if (fontMatch) {
+            scaleFont = this.font.replace(fontMatch[1], parseInt(fontMatch[1]) * scaleW);
+        }
+
         input.style.cssText = "margin:0;padding:0;position:absolute;display:block;border:1px solid rgba(50,50,50,0.8);outline:none;" +
-                              "left:" + (e.pageX - (e.offsetX || e.layerX) + this.location.x) + "px;" +
-                              "top:" + (e.pageY - (e.offsetY || e.layerY) + this.location.y) + "px;" +
+                              "left:" + (e.pageX - (e.offsetX || e.layerX) + this.location.x * scaleW) + "px;" +
+                              "top:" + (e.pageY - (e.offsetY || e.layerY) + this.location.y * scaleH) + "px;" +
                               "padding-left:" + _this.padding.left + "px;" +
-                              "width:" + (this.width - _this.padding.right / 2 - _this.padding.left) + "px;" +
-                              "height:" + (this.height - _this.padding.bottom / 2) + "px;" +
+                              "width:" + (this.width * scaleW - _this.padding.right / 2 - _this.padding.left) + "px;" +
+                              "height:" + (this.height * scaleH - _this.padding.bottom / 2) + "px;" +
                               "line-height:" + (this.height) + "px;" +
-                              "font:" + this.font + ";" +
+                              "font:" + scaleFont + ";" +
                               "color:" + this.foreColor + ";" +
                               "background:" + this.backColor;
+
         input.addEventListener("keydown", function (ke) {
             if (ke.keyCode == 13) {
                 if (window.event) ke.cancelBubble = true;
