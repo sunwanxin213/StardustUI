@@ -56,7 +56,7 @@
         var pc = this.parent.controls;
 
         for (var i = 0; i < pc.length; i++) {
-            if (pc[i] instanceof $S.RadioButton) {
+            if (pc[i] instanceof RadioButton) {
                 pc[i].checked = false;
             }
         }

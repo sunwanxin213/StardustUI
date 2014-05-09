@@ -3,7 +3,20 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title></title>
-    <script src="../min/StardustUI-min-0.2.js"></script>
+    <script src="../min/StardustUI-min-0.3.js"></script>
+<!--    <script src="../src/core/SUI.js"></script>
+    <script src="../src/core/Enum.js"></script>
+    <script src="../src/util/Page.js"></script>
+    <script src="../src/util/Ime.js"></script>
+    <script src="../src/controls/Base.js"></script>
+    <script src="../src/controls/Window.js"></script>
+    <script src="../src/controls/Button.js"></script>
+    <script src="../src/controls/CheckBox.js"></script>
+    <script src="../src/controls/Lable.js"></script>
+    <script src="../src/controls/LinkLable.js"></script>
+    <script src="../src/controls/ProgressBar.js"></script>
+    <script src="../src/controls/RadioButton.js"></script>
+    <script src="../src/controls/TextBox.js"></script>-->
     <script>
         window.onload = function () {
             var canvas = document.getElementById("testCanvas");
@@ -103,6 +116,14 @@
                 alert("演示怎么会有这种狗屁东西存在呢，吼吼。");
             };
 
+            // 创建一个ProgressBar控件
+            var progressBar1 = new sui.Control.ProgressBar();
+            //progressBar1.value = 40;
+            progressBar1.location = { x: 200, y: 500 };
+            progressBar1.size = { width: 500, height: 23 };
+            //progressBar1.style = sui.Enum.progressBarStyle.blocks;
+            progressBar1.style = sui.Enum.progressBarStyle.marquee;
+
             window1.addControl(lable1);
             window1.addControl(lable2);
             window1.addControl(lable3);
@@ -113,6 +134,7 @@
             window1.addControl(radioButton2);
             window1.addControl(checkBox1);
             window1.addControl(linkLable1);
+            window1.addControl(progressBar1);
 
             sui.useWindow(window1);
 
@@ -130,6 +152,6 @@
     </script>
 </head>
 <body style="margin: 0; padding: 0; text-align: center; background: url(background.png);">
-    <canvas id="testCanvas" width="800" height="600" style="width: 640px; height: 480px;"></canvas>
+    <canvas id="testCanvas" width="800" height="600" <!--style="width: 640px; height: 480px;"-->></canvas>
 </body>
 </html>

@@ -141,6 +141,16 @@
         neverUnderline: 3
     };
 
+    // 制定ProgressBar用于指示操作进度的样式
+    Enum.progressBarStyle = {
+        // 通过在ProgressBar中增加分段块的数量来指示进度
+        blocks: 0,
+        // 通过在ProgressBar中增加平滑连续的栏的大小来指示进度
+        continuous: 1,
+        // 通过以字幕方式在ProgressBar中连续滚动一个块来指示进度
+        marquee: 2
+    };
+
     Object.defineProperty($S, "Enum", {
         get: function () {
             return Enum;
