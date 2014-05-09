@@ -4,7 +4,7 @@
     var Page = {};
 
     var textMetricElement = null;
-    window.addEventListener("load", function () {
+    document.addEventListener("DOMContentLoaded", function () {
         textMetricElement = document.createElement("span");
         textMetricElement.style.cssText = "position:absolute;top:-1000px;left:0;z-index:-1000;color:transparent;";
         document.body.appendChild(textMetricElement);
