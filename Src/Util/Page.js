@@ -6,7 +6,7 @@
     var textMetricElement = null;
     document.addEventListener("DOMContentLoaded", function () {
         textMetricElement = document.createElement("span");
-        textMetricElement.style.cssText = "position:absolute;top:-1000px;left:0;z-index:-1000;color:transparent;";
+        textMetricElement.style.cssText = "position:absolute;padding:0px;margin:0px;top:-1000px;left:0;z-index:-1000;color:transparent;";
         document.body.appendChild(textMetricElement);
     });
 
