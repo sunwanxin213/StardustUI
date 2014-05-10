@@ -1,131 +1,266 @@
 ﻿void function (w) {
-    function SUI(ctx) {
-        if (!(ctx instanceof CanvasRenderingContext2D)) {
-            throw new Error("只能使用CanvasRenderingContext2D");
+
+    function StardustUI(context) {
+        /// <summary>StardustUI类</summary>
+        /// <param name="context" type="CanvasRenderingContext2D">2D上下文对象</param>
+        /// <returns type="StardustUI"></returns>
+
+        if (!(this instanceof StardustUI)) {
+            /* 若用户未手动实例化则自动实例化 */
+            return new StardustUI(container);
         }
-
-        // 禁止右键菜单
-        ctx.canvas.oncontextmenu = function () { return false; };
-
-        // 禁止拖拽
-        ctx.canvas.setAttribute("draggable", "false");
 
         var _this = this;
 
-        // 缓存上下文对象
-        this.context = ctx;
+        // 防止FireFox无法正确获取鼠标位置
+        if (document.defaultView.getComputedStyle(context.canvas).position == "static") {
+            context.canvas.style.position = "relative";
+        }
 
-        // 控件列表
-        this.controlList = [];
+        // 元素对象[只读]
+        Object.defineProperty(this, "element", {
+            get: function () { return context.canvas; }
+        });
 
-        this.addEventListener = function (name, callback, o) {
-            ctx.canvas.addEventListener(name, callback, o);
-        };
-        this.removeEventListener = function (name, callback, o) {
-            ctx.canvas.removeEventListener(name, callback, o);
-        };
+        // 渲染上下对象[只读]
+        Object.defineProperty(this, "context", {
+            get: function () { return context; }
+        });
 
-        this.addControl = function (control) {
-            /// <summary>添加控件</summary>
-            /// <param name="control" type="SUI.prototype.Control">控件对象</param>
+        // 禁止右键菜单
+        this.element.oncontextmenu = function () { return false; };
 
-            addControl(this, control);
-        };
+        // 禁止拖拽
+        this.element.setAttribute("draggable", "false");
 
-        this.removeControl = function (control) {
-            /// <summary>移除控件</summary>
-            /// <param name="control" type="SUI.prototype.Control">控件对象</param>
+        // 窗口列表
+        this.windows = [];
 
-            removeControl(this, control);
-        };
+        // 当前使用的窗口
+        this.currentWindow = null;
 
-        // 监测光标样式变更
-        this.addEventListener("mousemove", function (e) {
-            var c = null;
-            for (var i in _this.controlList) {
-                c = _this.controlList[i];
-                if (!sui.util.bounds(e, c) || !c.isVisible) {
-                    e.target.style.cursor = "default";
+        // 绑定检测鼠标移动事件
+        this.element.addEventListener("mousemove", function (e) {
+            _this.onMouseMove(e);
+        });
+
+        // 绑定鼠标点击事件
+        this.element.addEventListener("click", function (e) {
+            _this.onClick(e);
+        });
+
+        this.mouseEventProcess = function (e, callback) {
+            /// <summary>鼠标事件处理器</summary>
+
+            if (!_this.currentWindow) return;
+            var control,
+                cl = _this.currentWindow.controls;
+            for (var i = cl.length; i--;) {
+                control = cl[i];
+                if (_this.Util.Page.bounds(e, control) && control.visible && control.enable) {
+                    control._isMouseEnter = true;
+                    control.hasChange = true;
+                    callback && callback(control);
+                    if (control != _this.currentWindow) {
+                        if (window.event) e.cancelBubble = true;
+                        else e.stopPropagation();
+                    }
+                    break;
                 } else {
-                    for (var i in sui.cursors) {
-                        if (sui.cursors[i] == c.cursor) {
-                            e.target.style.cursor = i;
-                            return;
-                        }
-                    }
+                    control._isMouseEnter = false;
+                    e.target.style.cursor = "default";
                 }
-            }
-        }, false);
-
-        this.draw = function () {
-            var list = this.controlList,
-                c = null,
-                canvas = null,
-                ctx = null;
-            list.sort(function (n, m) {
-                return n.zIndex > m.zIndex;
-            });
-            for (var i = 0; i < list.length; i++) {
-                c = list[i],
-                canvas = c.bufferCanvas,
-                ctx = c.bufferCtx;
-
-                if (!c.isVisible) continue;
-
-                c.onSet && c.onSet();
-
-                canvas.width = c.size.width,
-                canvas.height = c.size.height;
-
-                c.onPaintBackground(ctx);
-                c.onPaint(canvas, ctx)
-                this.context.drawImage(canvas, c.location.x, c.location.y);
             }
         };
     }
 
-    // 已用控件名称
-    var controlNames = [];
+    StardustUI.prototype = {
+        addWindow: function (window) {
+            /// <summary>添加窗口</summary>
+            /// <param name="window" type="StardustUI.Control.Window">窗口对象</param>
 
-    // 缓存SUI原型对象
-    var sui = SUI.prototype;
+            for (var i = this.windows.length; i--;) {
+                if (this.windows[i] == window) return;
+            }
+            this.windows.push(window);
+        },
+        removeWindow: function (window) {
+            /// <summary>移除窗口</summary>
+            /// <param name="window" type="StardustUI.Control.Window">窗口对象</param>
 
-    function addControl(target, control) {
-        /// <summary>添加控件</summary>
-        /// <param name="target" type="Object">目标对象</param>
-        /// <param name="control" type="SUI.prototype.Control">控件对象</param>
+            for (var i = this.windows.length; i--;) {
+                if (this.windows[i] == window) {
+                    this.windows = this.windows.remove(i);
+                    return;
+                }
+            }
+        },
+        clearWindows: function () {
+            /// <summary>清空窗口</summary>
 
-        if (!(control instanceof SUI.prototype.Control)) throw new Error("无法将其他类型对象做为控件添加");
-        for (var i = controlNames.length; i--;) {
-            if (controlNames[i].name == control.name) throw new Error("控件名称与现有控件名称重复");
-        }
-        controlNames.push(control.name);
-        target.controlList.push(control);
-        for (var i = 0; i < control.listenerList.length; i++) {
-            target.addEventListener(control.listenerList[i].name, control.listenerList[i].callback, control.listenerList[i].o);
-        }
-    }
+            this.windows.clear();
+        },
+        useWindow: function (window) {
+            /// <summary>使用窗口</summary>
+            /// <param name="window" type="StardustUI.Control.Window">窗口对象</param>
 
-    function removeControl(target, control) {
-        /// <summary>移除控件</summary>
-        /// <param name="target" type="Ojbect">目标对象</param>
-        /// <param name="control" type="SUI.prototype.Control">控件对象</param>
+            if (!(window instanceof this.Control.Window)) return this.currentWindow = null;
+            window.size = { width: this.element.width, height: this.element.height };
+            window.zIndex = 0;
+            this.currentWindow = window;
+        },
+        onMouseMove: function (e) {
+            /// <summary>检测鼠标移动事件</summary>
+            /// <param name="e" type="MouseEvent">鼠标事件参数</param>
 
-        if (!(control instanceof SUI.prototype.Control)) throw new Error("无法将其他类型对象做为控件添加");
-        for (var i = controlNames.length; i--;) {
-            if (controlNames[i].name == control.name) {
-                (controlNames = controlNames.slice(0, i).concat(controlNames.slice(i + 1, controlNames.length)));
-                for (var n = target.controlList.length; n--;) {
-                    if (target.controlList[n].name == control.name) {
-                        for (var i = 0; i < control.listenerList.length; i++) {
-                            target.removeEventListener(control.listenerList[i].name, control.listenerList[i].callback);
-                        }
-                        return ((target.controlList = target.controlList.slice(0, n).concat(target.controlList.slice(n + 1, target.controlList.length))) && true);
+            var _this = this;
+
+            this.mouseEventProcess(e, function (control) {
+                control._onMouseMove && control._onMouseMove(e);
+                for (var i in _this.Enum.cursors) {
+                    if (_this.Enum.cursors[i] == control.cursor) {
+                        return e.target.style.cursor = i;
+                    }
+                }
+            });
+        },
+        onClick: function (e) {
+            /// <summary>检测鼠标单击事件</summary>
+            /// <param name="e" type="MouseEvent">鼠标事件参数</param>
+
+            var _this = this;
+
+            this.mouseEventProcess(e, function (control) {
+                control._onClick && control._onClick(e);
+                switch (control.imeMode) {
+                    case _this.Enum.imeMode.on:
+                        _this.Util.Ime.enable();
+                        break;
+                    case _this.Enum.imeMode.off:
+                        _this.Util.Ime.close();
+                        break;
+                }
+            });
+        },
+        update: function () {
+            /// <summary>更新内容</summary>
+
+            if (!this.currentWindow) return;
+            var window = this.currentWindow,
+                control = null,
+                cl = window.controls;
+            function updateSub(parent, cl) {
+                if (!parent.visible) return;
+                parent.onSet() || parent.onPaintBackground() || parent.onPaint();
+                for (var i = 0; i < cl.length; i++) {
+                    control = cl[i];
+                    if (control.hasChange) {
+                        control.onSet() || control.onPaintBackground() || control.onPaint();
+                        control.hasChange = false;
+                    }
+                    if (control.controls.length) {
+                        updateSub(control, control.controls);
                     }
                 }
             }
-        }
-    }
+            updateSub(window, cl);
+        },
+        draw: function () {
+            /// <summary>绘制界面</summary>
 
-    w.SUI = w.StardustUI = SUI;
+            var _this = this;
+
+            if (!this.currentWindow) return;
+            var window = this.currentWindow,
+                control = null,
+                cl = window.controls;
+            cl.sort(function (n, m) { return n.zIndex > m.zIndex; });
+            function drawSub(parent, cl) {
+                if (!parent.visible) return;
+                for (var i = 0; i < cl.length; i++) {
+                    control = cl[i];
+                    if (!control.visible) continue;
+                    if (control.controls.length) {
+                        drawSub(control, control.controls);
+                    }
+                    parent.bufferCtx.drawImage(control.bufferCanvas, control.x, control.y);
+                }
+                _this.context.drawImage(parent.bufferCanvas, 0, 0);
+            }
+            drawSub(window, cl);
+            this.context.drawImage(window.bufferCanvas, 0, 0);
+        }
+    };
+
+    Array.prototype.insert = function (value, index) {
+        /// <summary>插入项</summary>
+        /// <param name="value" type="Object">元素</param>
+        /// <param name="index" type="Number">索引</param>
+        /// <returns type="Array">数组</returns>
+
+        var arrTemp = this;
+        if (index > arrTemp.length) index = arrTemp.length;
+        if (index < -arrTemp.length) index = 0;
+        if (index < 0) index = arrTemp.length + index;
+        for (var i = arrTemp.length; i > index; i--) {
+            arrTemp[i] = arrTemp[i - 1];
+        }
+        arrTemp[index] = value;
+        return arrTemp;
+    };
+
+    Array.prototype.remove = function (index) {
+        /// <summary>移除项</summary>
+        /// <param name="index" type="Number">索引</param>
+        /// <returns type="Array">数组</returns>
+
+        return (index < 0) ? this : this.slice(0, index).concat(this.slice(index + 1, this.length));
+    };
+
+    Array.prototype.clear = function () {
+        /// <summary>清空数组</summary>
+
+        this.length = 0;
+    };
+
+    String.prototype.format = function (arrs) {
+        /// <summary>格式化字符串</summary>
+        /// <returns type="String">格式化后的字符串</returns>
+        var tempStr = this;
+
+        for (var i = 0; i < arguments.length; i++) {
+            tempStr = tempStr.replace("{" + i + "}", arguments[i]);
+        }
+
+        return tempStr;
+    };
+
+    CanvasRenderingContext2D.prototype.strokeRoundRect = function (x, y, w, h, r, lineWidth, isFill) {
+        /// <summary>绘制空心圆角矩形</summary>
+
+        // 检查半径是否合理
+        r = w < (2 * r) ? (w / 2) : h < (2 * r) ? (h / 2) : r;
+
+        this.lineWidth = lineWidth || 1.0;
+        //if (isBeginConvert) {
+        //    x *= -0.5;
+        //    y *= -0.5;
+        //}
+        this.beginPath();
+        this.moveTo(x + r, y);
+        this.arcTo(x + w, y, x + w, y + h, r);
+        this.arcTo(x + w, y + h, x, y + h, r);
+        this.arcTo(x, y + h, x, y, r);
+        this.arcTo(x, y, x + w, y, r);
+        this.closePath();
+        if (isFill ? this.fill() : this.stroke()) { };
+    };
+
+    CanvasRenderingContext2D.prototype.fillRoundRect = function (x, y, w, h, r, lineWidth) {
+        /// <summary>绘制实心圆角矩形</summary>
+
+        this.strokeRoundRect(x, y, w, h, r, lineWidth, true);
+    };
+
+    w.StardustUI = w.$S = StardustUI;
 }(window);
